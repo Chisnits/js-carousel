@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple Carousel</title>
+    <style>
+        .wrapper {
+            height: 100vh;
+        }
+        .gallery-wrapper {
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-direction: column;
+        }
+        #GalleryContainer {
+            width: 70vw;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gallery-image {
+            height: 100px;
+            width: 100px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            padding-top: 25px;
+        }
+    </style>
+</head>
+<body>
+    <section class="wrapper">
+        <div class="gallery-wrapper">
+            <div id="GalleryContainer"></div>
+            <div class="button-container">
+                <button id="Previous">Previous</button>
+                <button id="Next">Next</button>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+<script>
+const num = 6;
+async function renderGalleryItem (){
+    let promise = await fetch(`https://source.unsplash.com/random/?sig=${num}`);    
+
+        let galleryItem = document.createElement('div');
+        galleryItem.classList.add('gallery-item');
+        galleryItem.innerHTML = `<img class="gallery-image" src="${promise.url}" alt="gallery image"/>`;;
+        document.getElementById("GalleryContainer").appendChild(galleryItem);
+
+    let result = await promise;
+
+    let arr = Array.from(document.querySelectorAll("#GalleryContainer img"));
+    console.log(arr);
+};
+
+for(let i=0;i<num;i++){
+  renderGalleryItem(num);
+}
+
+
+document.getElementById("Next").addEventListener("click", Next);
+function Next() {
+    console.log("next");
+}
+document.getElementById("Previous").addEventListener("click", Previous);
+function Previous() {
+    console.log("previous");
+}
+</script>
