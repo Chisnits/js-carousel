@@ -10,22 +10,28 @@
             height: 100vh;
         }
         .gallery-wrapper {
-            height: 60vh;
+            height: 99vh;
             display: flex;
             align-items: center;
             justify-content: flex-end;
             flex-direction: column;
         }
         #GalleryContainer {
-            width: 70vw;
+            width: 40vw;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
         }
         .gallery-image {
-            height: 100px;
             width: 100px;
+            height: 250px;
+            background-color: white;
+        }
+        .ActiveImage {
+            width: 100px;
+            height: 250px;
+            background-color: white;
         }
         .button-container {
             display: flex;
@@ -37,6 +43,7 @@
 <body>
     <section class="wrapper">
         <div class="gallery-wrapper">
+            <div id="ActiveItem"></div>
             <div id="GalleryContainer"></div>
             <div class="button-container">
                 <button id="Previous">Previous</button>
@@ -48,23 +55,38 @@
 </html>
 <script>
 const num = 6;
-async function renderGalleryItem (){
-    let promise = await fetch(`https://source.unsplash.com/random/?sig=${num}`);    
-
-        let galleryItem = document.createElement('div');
-        galleryItem.classList.add('gallery-item');
-        galleryItem.innerHTML = `<img class="gallery-image" src="${promise.url}" alt="gallery image"/>`;;
-        document.getElementById("GalleryContainer").appendChild(galleryItem);
-
-    let result = await promise;
-
-    let arr = Array.from(document.querySelectorAll("#GalleryContainer img"));
-    console.log(arr);
-};
+const arr = [];
+function renderGalleryItem (){
+    fetch(`https://source.unsplash.com/random/?sig=${num}`).then((response) => {
+        arr.push(response.url);
+    }) 
+}
 
 for(let i=0;i<num;i++){
   renderGalleryItem(num);
 }
+
+function itemsToDisplay() {
+    for(var i = 0; i < arr.length; i++) {
+        if(i < 3) {
+        let galleryItem = document.createElement('div');
+            galleryItem.classList.add('gallery-item');
+            galleryItem.innerHTML = `<img class="gallery-image" src="${arr[i]}" alt="gallery image"/>`;
+            document.getElementById("GalleryContainer").appendChild(galleryItem);
+        }
+    }
+}
+
+function getActiveImage(){
+    let activeElem = document.createElement('div');
+    let nodes = Array.from(document.querySelectorAll("#GalleryContainer img"));
+    for(var i = 0; i < nodes.length; i++) {
+        i === 1  ? activeElem.innerHTML = `<img class="gallery-image" src="${nodes[i].src}" alt="gallery image"/>` : "";
+    }
+    document.getElementById("ActiveItem").appendChild(activeElem);
+}
+
+setTimeout(function(){itemsToDisplay(); getActiveImage(); }, 700);
 
 
 document.getElementById("Next").addEventListener("click", Next);
