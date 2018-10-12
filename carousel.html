@@ -86,12 +86,16 @@ function getActiveImage(){
     document.getElementById("ActiveItem").appendChild(activeElem);
 }
 
-setTimeout(function(){itemsToDisplay(); getActiveImage(); }, 700);
+setTimeout(function(){itemsToDisplay(); getActiveImage();}, 700);
 
 
 document.getElementById("Next").addEventListener("click", Next);
 function Next() {
-    console.log("next");
+    let arr = Array.from(document.getElementById("GalleryContainer").children);
+    console.log(arr)
+
+
+    
 }
 document.getElementById("Previous").addEventListener("click", Previous);
 function Previous() {
