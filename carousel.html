@@ -24,19 +24,63 @@
             align-items: center;
         }
         .gallery-image {
-            width: 100px;
-            height: 250px;
+            width: 13vw;
+            height: 30vh;
             background-color: white;
         }
-        .ActiveImage {
-            width: 100px;
-            height: 250px;
+        .active-image {
+            width: initial;
+            height: 60vh;
             background-color: white;
         }
         .button-container {
             display: flex;
             flex-direction: row;
-            padding-top: 25px;
+            align-items: center;
+        }
+        .previous {
+            height: 4vh;
+            width: 4vw;
+            background-color: #f1f1f1;
+            color: #000;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        .next {
+            height: 4vh;
+            width: 4vw;
+            background-color: #f1f1f1;
+            color: #000;
+            border-radius: 50%;
+            margin-left: 15px;
+        }
+        .previous, .next {
+            font-size: 18px;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            border: none;
+            
+        }
+        .previous:hover, .next:hover, .previous:focus, .next:focus {
+            background-color: #ddd;
+            color: black;
+            outline: none;
+            text-decoration: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        .fade-in {
+        animation-name: fadeIn;
+        animation-duration: .5s;
         }
     </style>
 </head>
@@ -44,18 +88,19 @@
     <section class="wrapper">
         <div class="gallery-wrapper">
             <div id="ActiveItem"></div>
-            <div id="GalleryContainer"></div>
             <div class="button-container">
-                <button id="Previous">Previous</button>
-                <button id="Next">Next</button>
+                <button id="Previous" class="previous">&#8249;</button>
+                <div id="GalleryContainer"></div>
+                <button id="Next" class="next">&#8250;</button>
             </div>
         </div>
     </section>
 </body>
 </html>
 <script>
-const num = 6;
+const num = 3;
 const arr = [];
+var i = 0;
 function renderGalleryItem (){
     fetch(`https://source.unsplash.com/random/?sig=${num}`).then((response) => {
         arr.push(response.url);
@@ -66,12 +111,12 @@ for(let i=0;i<num;i++){
   renderGalleryItem(num);
 }
 
-function itemsToDisplay() {
+function itemsToDisplay(arr) {
     for(var i = 0; i < arr.length; i++) {
         if(i < 3) {
         let galleryItem = document.createElement('div');
             galleryItem.classList.add('gallery-item');
-            galleryItem.innerHTML = `<img class="gallery-image" src="${arr[i]}" alt="gallery image"/>`;
+            galleryItem.innerHTML = `<img class="gallery-image fade-in" src="${arr[i]}" alt="gallery image"/>`;
             document.getElementById("GalleryContainer").appendChild(galleryItem);
         }
     }
@@ -81,24 +126,51 @@ function getActiveImage(){
     let activeElem = document.createElement('div');
     let nodes = Array.from(document.querySelectorAll("#GalleryContainer img"));
     for(var i = 0; i < nodes.length; i++) {
-        i === 1  ? activeElem.innerHTML = `<img class="gallery-image" src="${nodes[i].src}" alt="gallery image"/>` : "";
+        i === 1  ? activeElem.innerHTML = `<img class="active-image fade-in" src="${nodes[i].src}" alt="active image"/>` : "";
     }
     document.getElementById("ActiveItem").appendChild(activeElem);
 }
 
-setTimeout(function(){itemsToDisplay(); getActiveImage();}, 700);
+setTimeout(function(){itemsToDisplay(arr); getActiveImage();}, 700);
 
-
-document.getElementById("Next").addEventListener("click", Next);
-function Next() {
-    let arr = Array.from(document.getElementById("GalleryContainer").children);
-    console.log(arr)
-
-
-    
+function nextImage() {
+    i = i + 1; // increase i by one
+    i = i % arr.length; // if we've gone too high, start from `0` again
+    return arr[i]; // give us back the item of where we are now
 }
-document.getElementById("Previous").addEventListener("click", Previous);
-function Previous() {
-    console.log("previous");
+
+function prevImage() {
+    if (i === 0) { // i would become 0
+        i = arr.length; // so put it at the other end of the array
+    }
+    i = i - 1; // decrease by one
+    return arr[i]; // give us back the item of where we are now
 }
+
+document.getElementById("Next").addEventListener("click", () => { 
+    let galleryArr = Array.from(document.getElementById("GalleryContainer").children);
+        galleryArr[0].parentNode.removeChild(galleryArr[0]);
+    let nextItem = document.createElement('div'); 
+            nextItem.classList.add('gallery-item');
+            nextItem.innerHTML = `<img class="gallery-image" src="${nextImage()}" alt="gallery image"/>`;
+            document.getElementById("GalleryContainer").appendChild(nextItem);
+
+    let activeArr = Array.from(document.getElementById("ActiveItem").children);
+    activeArr[0].parentNode.removeChild(activeArr[0]);
+    getActiveImage();
+}
+);
+
+document.getElementById("Previous").addEventListener("click", () => {
+    let galleryArr = Array.from(document.getElementById("GalleryContainer").children);
+    galleryArr[2].parentNode.removeChild(galleryArr[2]);
+    let prevItem = document.createElement('div');
+            prevItem.classList.add('gallery-item');
+            prevItem.innerHTML = `<img class="gallery-image" src="${prevImage()}" alt="gallery image"/>`;
+            document.getElementById("GalleryContainer").prepend(prevItem);
+
+    let activeArr = Array.from(document.getElementById("ActiveItem").children);
+    activeArr[0].parentNode.removeChild(activeArr[0]);
+    getActiveImage();
+});
 </script>
